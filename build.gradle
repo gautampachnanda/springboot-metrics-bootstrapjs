@@ -1,0 +1,62 @@
+group 'org.pachnanda.springboot.metrics'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-data-mongodb")
+
+    // tag::actuator[]
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    // end::actuator[]
+    // tag::tests[]
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    // end::tests[]
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
+
+jar {
+    baseName = 'springboot-metrics-bootstrap-example'
+    version =  '0.0.0'
+    excludes = ['**/application.yml']
+}
+
+task('execJar', type:Jar, dependsOn: 'jar') {
+    baseName = 'springboot-metrics-bootstrap-example'
+    version =  '0.0.0'
+    classifier = 'exec'
+    from sourceSets.main.output
+}
+
+bootRepackage  {
+    withJarTask = tasks['execJar']
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.6.RELEASE")
+    }
+
+
+}
