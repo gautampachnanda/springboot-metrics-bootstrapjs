@@ -13,12 +13,12 @@ public class PropertiesValidator implements Validator {
 
     final Pattern pattern = Pattern.compile("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$");
 
-    @Override
+   // @Override
     public boolean supports(Class<?> type) {
         return type == AppProperties.class;
     }
 
-    @Override
+   // @Override
     public void validate(Object o, Errors errors) {
         ValidationUtils.rejectIfEmpty(errors, "host", "host.empty");
         ValidationUtils.rejectIfEmpty(errors, "port", "port.empty");
