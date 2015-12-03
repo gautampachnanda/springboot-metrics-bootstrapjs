@@ -1,0 +1,18 @@
+mongod:
+  build: docker/mongod
+graphite:
+  build: docker/graphite
+  ports:
+    - 80:80
+    - 2003:2003
+    - 8125:8125/udp
+boot-app:
+  build: docker/boot-app
+  volumes: 
+    - ./build/libs:/app
+  links:
+    - mongod
+    - graphite
+  ports:
+    - 9000:9000
+    - 9092:9092

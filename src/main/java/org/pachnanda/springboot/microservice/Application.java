@@ -6,6 +6,7 @@ import static springfox.documentation.schema.AlternateTypeRules.newRule;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.pachnanda.springboot.microservice.entities.Customer;
 import org.pachnanda.springboot.microservice.resource.CustomerRepository;
@@ -38,12 +39,22 @@ import springfox.documentation.swagger.web.SecurityConfiguration;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.MetricFilter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.graphite.Graphite;
+import com.codahale.metrics.graphite.GraphiteReporter;
 import com.fasterxml.classmate.TypeResolver;
+import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
+import com.ryantenney.metrics.spring.config.annotation.MetricsConfigurerAdapter;
+
+//import javax.inject.Inject;
 
 @SpringBootApplication
 @EnableSwagger2
 @ComponentScan(basePackageClasses = { HelloController.class })
-public class Application {
+@EnableMetrics(proxyTargetClass = true)
+public class Application extends MetricsConfigurerAdapter {
 
 	@Bean
 	public Validator configurationPropertiesValidator() {
@@ -152,4 +163,24 @@ public class Application {
 		}
 	}
 
+	@Bean
+	public GraphiteReporter graphiteReporter() {
+		MetricRegistry metricRegistry= new MetricRegistry();
+		final Graphite graphite = new Graphite(
+				"graphite", 2003);
+		final GraphiteReporter reporter = GraphiteReporter
+				.forRegistry(metricRegistry)
+				.prefixedWith("org.pachnanda.springbootbootstrapjs")
+				.convertRatesTo(TimeUnit.SECONDS)
+				.convertDurationsTo(TimeUnit.MILLISECONDS)
+				.build(graphite);
+		reporter.start(30, TimeUnit.SECONDS);
+		
+		  registerReporter(ConsoleReporter
+		            .forRegistry(metricRegistry)
+		            .build())
+		            .start(1, TimeUnit.MINUTES);
+		  
+		return reporter;
+	}
 }
