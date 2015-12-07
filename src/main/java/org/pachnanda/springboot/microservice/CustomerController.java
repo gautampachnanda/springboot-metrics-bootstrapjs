@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.pachnanda.springboot.microservice.entities.Customer;
 import org.pachnanda.springboot.microservice.resource.CustomerRepository;
 
+import com.codahale.metrics.annotation.Timed;
+
 import java.util.List;
 
 /**
@@ -20,18 +22,21 @@ public class CustomerController {
     private CustomerRepository repository;
 
     @RequestMapping(value = "/customers", method = RequestMethod.GET)
+    @Timed
     public ResponseEntity<List<Customer>> customers() {
         List<Customer> customers = repository.findAll();
         return new ResponseEntity<List<Customer>>(customers, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/customers/firstName/{name}", method = RequestMethod.GET)
+    @Timed
     public ResponseEntity<List<Customer>>  customersByFirstName(@PathVariable String name) {
         List<Customer> customers = repository.findByFirstName(name);
         return new ResponseEntity<List<Customer>>(customers, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/customers/lastName/{name}", method = RequestMethod.GET)
+    @Timed
     public ResponseEntity<List<Customer>>  customersByLastName(@PathVariable String name) {
         List<Customer> customers = repository.findByLastName(name);
         return new ResponseEntity<List<Customer>>(customers, HttpStatus.OK);
